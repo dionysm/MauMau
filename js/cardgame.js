@@ -6,14 +6,15 @@ const cardSuits = [
 ];
 
 const cardValues = ["7", "8", "9", "10", "Bube", "Dame", "König", "Ass"];
-
+let turn = 1;
 let deck;
 let deckShuffled = [];
 let handCPU = [];
 let handPlayer = [];
 let discardPile = [];
 
-// 🃏 Erstelle das Deck mit allen Infos
+const roundCounterDiv = document.getElementById("round")
+// 🃏 Erstelle das Deck mit allen Informationen
 function initializeDeck() {
   let newDeck = [];
   for (const suit of cardSuits) {
@@ -138,22 +139,23 @@ function playerTurn(card){
   let index = Array.from(card.parentNode.children).indexOf(card);
   console.log(index)
   console.log(handPlayer[index])
-  if (handPlayer[index].value == discardPile[0].value || handPlayer[index].symbol == discardPile[0].symbol ){
+  if (handPlayer[index].value === discardPile[0].value || handPlayer[index].symbol === discardPile[0].symbol ){
     console.log("JEAH! Selbe Farbe bzw Symbol")
     card.remove()
     discardPile.unshift(handPlayer[index])
     handPlayer.splice(index,1);
     renderDiscardPile()
+    opponentTurn()
   }
   else {
     console.log("Karte kann nicht gelegt werden.")
   }
 }
 
-function drawCard(noc){
-  if (handPlayer.length > 0){
-    for (i=0; i < noc; i++){
-      handPlayer.push(deckShuffled.pop())
+function drawCard(cards2Draw, whichHand){
+  if (whichHand.length > 0){
+    for (let i=0; i < cards2Draw; i++){
+      whichHand.push(deckShuffled.pop())
     }
     renderPlayerHand();
   }
@@ -162,18 +164,51 @@ function drawCard(noc){
   }
 }
 
+async function opponentTurn(){
+  console.log("opponents turn started here")
+  let playableCards =[]
+  for (let i=0; i< handCPU.length; i++){
+    card = handCPU[i];
+    console.log("playablecards length over iteration: " + playableCards.length)
+    if (card.value === discardPile[discardPile.length-1].value || card.symbol === discardPile[discardPile.length-1].symbol){
+      console.log("matching card found")
+      newCard = card;
+      newCard.index = i;
+      playableCards.push(newCard)
+    }
+  }
+  if (playableCards.length > 0){
+    console.log("opponent played " + playableCards[0].symbol + " " + playableCards[0].value)
+    // Zufällige Karte abwerfen für natürlicheres Spiel
+    randomIndex = Math.floor(Math.random() * handCPU.length);
+    discardPile.unshift(handCPU[playableCards[0].index])
+    handCPU.splice(playableCards[0].index,1);
+    await sleep(1000);
+    renderDiscardPile()
+    const opponentHandElement = document.getElementById("opponentHand");
+    cardToRemove = document.getElementById("opponentHand").children[randomIndex]
+    opponentHandElement.removeChild(cardToRemove);
+  }
+  console.log(playableCards.length)
+  roundCounterDiv.innerHTML = turn++
 
+}
+
+
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
   /* Gegner zählt Karten mit, d.H. er weiß genau welche Karten noch im Ziehstapel und in der Spielerhand existieren,*/
   /* Zuerst werden alle spielbaren Karten gecheckt, wenn mehrere Karten spielbar sind, wird abgewogen welche am besten sein könnte*/
-  /* Check1 => Wieviele Karten gibt es noch im Spiel von der möglichen Karte
-     Check2 => Hat der Gegner Aktionskarten? Bevorzuge Aktionskarten wenn der Spieler weniger Handkarten als der Computer besitzt.
-     Check3 => Wieviele "passende" Karten zu der möglichen hat der Gegner noch in der Hand.
+  /* Check1 → Wieviele Karten gibt es noch im Spiel von der möglichen Karte
+     Check2 → Hat der Gegner Aktionskarten? Bevorzuge Aktionskarten wenn der Spieler weniger Handkarten als der Computer besitzt.
+     Check3 → Wieviele "passende" Karten zu der möglichen hat der Gegner noch in der Hand.
   function enemyTurn() {
     const possiblePlayableCards = getPossiblePlayableCards(handCPU, discardPile);
 
     if (possiblePlayableCards.length > 0) {
       // Bewertungsphase: für jede spielbare Karte eine Bewertung berechnen
-      const ratedCards = possiblePlayableCards.map(card => {
+      const ratedCards = possiblePlayableCards.map(card → {
 
       });
 
