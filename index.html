@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kartenspiel</title>
+  <link rel="stylesheet" href="css/cardgame.css">
+</head>
+<body>
+<div class="nav"><div class="subNav"><button id="LeaderBoard">Leaderboard</button></div><div class="subNav">Runde: <span id="score">0</span></div><div class="subNav"><button id="startGame" onclick="startGame()">Start Game</button></div></div>
+<div class="game-container">
+  <div class="opponent-hand">
+    <div class="card opponentCard"></div>
+    <div class="card opponentCard"></div>
+    <div class="card opponentCard"></div>
+    <div class="card opponentCard"></div>
+    <div class="card opponentCard"></div>
+  </div>
+  <div class="deck-area">
+    <div class="deck" onclick="drawCard(1)">Ziehstapel</div>
+    <div class="discard" onclick="showDiscard()">Ablagestapel</div>
+  </div>
+  <div class="player-hand">
+    <div class="card" onclick="playerTurn(this)" draggable="true"></div>
+    <div class="card" onclick="playerTurn(this)" draggable="true"></div>
+    <div class="card" onclick="playerTurn(this)" draggable="true"></div>
+    <div class="card" onclick="playerTurn(this)" draggable="true"></div>
+    <div class="card" onclick="playerTurn(this)" draggable="true"></div>
+  </div>
+</div>
+</body>
+<script src="js/cardgame.js"></script>
+</html>
