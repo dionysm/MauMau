@@ -1,7 +1,6 @@
-// --------------------------------------------------------------------------
+// ==========================================================================
 // Global Constants and Variables
-// --------------------------------------------------------------------------
-
+// ==========================================================================
 const cardSuits = [
   { symbol: "♣", name: "Kreuz", color: "schwarz" },
   { symbol: "♠", name: "Pik", color: "schwarz" },
@@ -19,23 +18,23 @@ let playerHand = [];
 let discardPile = [];
 let draggedElement = null;
 
-// --------------------------------------------------------------------------
-// DOM Elemente
-// --------------------------------------------------------------------------
-
+// DOM Elements
 const roundCounterDiv = document.getElementById("round");
 const opponentHandDiv = document.getElementById("opponentHand");
-const dropArea = document.getElementById('discardDrop');
-// --------------------------------------------------------------------------
-// Deck-Funktionen: Initialisierung und Mischen
-// --------------------------------------------------------------------------
+const dropArea = document.getElementById("discardDrop");
 
+
+// ==========================================================================
+// Deck Functions
+// ==========================================================================
 
 /**
- * Erstelle das Deck mit allen Informationen
+ * Initializes a new deck of cards.
+ * @returns {Array} Array of card objects.
  */
 function initializeDeck() {
-  let newDeck = [];
+
+  const newDeck = [];
   for (const suit of cardSuits) {
     for (const value of cardValues) {
       newDeck.push({
@@ -43,7 +42,7 @@ function initializeDeck() {
         name: suit.name,
         color: suit.color,
         cardValue: value,
-        fullName: `${value} ${suit.name}` // Z. B. "Bube Herz"
+        fullName: `${value} ${suit.name}` // e.g., "Bube Herz"
       });
     }
   }
@@ -51,28 +50,34 @@ function initializeDeck() {
 }
 
 /**
- * Mische das Deck
+ * Shuffles an array of cards using the Fisher-Yates algorithm.
+ * @param {Array} array - The array to shuffle.
+ * @returns {Array} Shuffled array.
  */
 function shuffleDeck(array) {
-  let shuffledArray = [...array];
+  const shuffledArray = [...array];
   let currentIndex = shuffledArray.length;
 
   while (currentIndex !== 0) {
-    let randomIndex = Math.floor(Math.random() * currentIndex);
+    const randomIndex = Math.floor(Math.random() * currentIndex);
     currentIndex--;
-
-    [shuffledArray[currentIndex], shuffledArray[randomIndex]] = [shuffledArray[randomIndex], shuffledArray[currentIndex]];
+    [shuffledArray[currentIndex], shuffledArray[randomIndex]] = [
+      shuffledArray[randomIndex],
+      shuffledArray[currentIndex]
+    ];
   }
 
   return shuffledArray;
 }
 
-// --------------------------------------------------------------------------
-// Spiel-Setup / Initialisierungsfunktionen
-// --------------------------------------------------------------------------
+
+// ==========================================================================
+// Game Setup Functions
+// ==========================================================================
 
 /**
- * Erste Runde: Karten austeilen
+ * Deals the initial hands for both player and opponent,
+ * and sets the first card of the discard pile.
  */
 function dealInitialHands() {
   for (let i = 0; i < 5; i++) {
@@ -82,54 +87,50 @@ function dealInitialHands() {
   discardPile.push(shuffledDeck.shift());
   renderPlayerHand();
   renderDiscardPile();
-  dropCard()
+  initializeDropArea();
 }
 
 /**
- * Starte das Spiel: Initialisiere und mische das Deck, dann starte die erste Runde
+ * Starts the game by initializing and shuffling the deck,
+ * then dealing the initial hands.
  */
 function startGame() {
-  document.getElementById('modal').classList.toggle('hidden')
-  // 🎴 Initialisiere und mische das Deck
+  document.getElementById("modal").classList.toggle("hidden");
   deck = initializeDeck();
   shuffledDeck = shuffleDeck(deck);
   dealInitialHands();
 }
 
-// --------------------------------------------------------------------------
-// Rendering-Funktionen
-// --------------------------------------------------------------------------
+
+// ==========================================================================
+// Rendering Functions
+// ==========================================================================
 
 /**
- * Rendere Karten in einem Container
- * @param {string} containerSelector - Der Selector des Containers
- * @param {Array} cards - Das Karten-Array
- * @param {boolean} showOnlyTop - Zeige nur die oberste Karte (optional)
+ * Renders an array of cards in a specified container.
+ * @param {string} containerSelector - CSS selector for the container.
+ * @param {Array} cards - Array of card objects.
+ * @param {boolean} [showOnlyTop=false] - If true, only the top card is shown.
  */
 function renderCards(containerSelector, cards, showOnlyTop = false) {
+
   const container = document.querySelector(containerSelector);
-  container.innerHTML = ""; // Vorherige Karten löschen
+  container.innerHTML = "";
+  const cardsToRender = showOnlyTop && cards.length > 0 ? [cards[0]] : cards;
 
-  if (showOnlyTop && cards.length > 0) {
-    // Nur die oberste Karte anzeigen
-    cards = [cards[0]];
-  }
-
-  cards.forEach((card) => {
-    // Neues Karten-Element erstellen
+  cardsToRender.forEach((card) => {
     const cardElement = document.createElement("div");
     cardElement.classList.add("card");
     cardElement.setAttribute("onclick", "playerTurn(this);");
     cardElement.setAttribute("draggable", "true");
 
-    cardElement.addEventListener('dragstart', function() {
+    cardElement.addEventListener("dragstart", function () {
       draggedElement = this;
     });
 
-    // Textfarbe anhand der Kartenfarbe setzen
-    let textColor = card.color === "rot" ? "red" : "black";
+    const textColor = card.color === "rot" ? "red" : "black";
 
-    // Drei Unter-Divs für das Kartendesign erstellen
+    // Create card elements for top, center, and bottom
     const topDiv = document.createElement("div");
     topDiv.classList.add("card-top");
     topDiv.textContent = `${card.cardValue} ${card.symbol}`;
@@ -139,7 +140,7 @@ function renderCards(containerSelector, cards, showOnlyTop = false) {
     centerDiv.classList.add("card-center");
     centerDiv.textContent = card.symbol;
     centerDiv.style.color = textColor;
-    centerDiv.style.fontSize = "42px"; // Größer für bessere Optik
+    centerDiv.style.fontSize = "42px";
 
     const bottomDiv = document.createElement("div");
     bottomDiv.classList.add("card-bottom");
@@ -147,169 +148,217 @@ function renderCards(containerSelector, cards, showOnlyTop = false) {
     bottomDiv.style.color = textColor;
     bottomDiv.style.transform = "rotate(180deg)";
 
-    // Struktur in die Karte einfügen
     cardElement.appendChild(topDiv);
     cardElement.appendChild(centerDiv);
     cardElement.appendChild(bottomDiv);
-
-    // Karte zum Container hinzufügen
     container.appendChild(cardElement);
   });
 }
 
 /**
- * Render-Funktion für die Spielerhand
+ * Renders the player's hand.
  */
 function renderPlayerHand() {
   renderCards(".player-hand", playerHand);
 }
 
-function renderCPUHand(){
-  renderCards(".opponent-hand", cpuHand)
+/**
+ * Renders the opponent's hand.
+ */
+function renderCPUHand() {
+  renderCards(".opponent-hand", cpuHand);
 }
 
-
 /**
- * Render-Funktion für den Ablagestapel (zeigt nur die oberste Karte)
+ * Renders the discard pile, showing only the top card.
  */
 function renderDiscardPile() {
   renderCards(".discard", discardPile, true);
 }
 
-// --------------------------------------------------------------------------
-// Spieler- und Gegner-Funktionen (Gameplay)
-// --------------------------------------------------------------------------
+
+// ==========================================================================
+// Gameplay Functions
+// ==========================================================================
 
 /**
- * Spieler spielt eine Karte
- * @param {HTMLElement} card - Die angeklickte Karte
+ * Handles the player's action when a card is played.
+ * Validates the move and, if valid, updates the discard pile and hand.
+ * @param {HTMLElement} card - The clicked card element.
  */
 function playerTurn(card) {
-  let index = Array.from(card.parentNode.children).indexOf(card);
-  if (playerHand[index].cardValue === discardPile[0].cardValue || playerHand[index].symbol === discardPile[0].symbol) {
-    console.log(playerHand[index]);
+  const index = Array.from(card.parentNode.children).indexOf(card);
+  const selectedCard = playerHand[index];
+  const topDiscard = discardPile[0];
+
+  if (selectedCard.cardValue === topDiscard.cardValue || selectedCard.symbol === topDiscard.symbol) {
     card.remove();
-    discardPile.unshift(playerHand[index]);
+    discardPile.unshift(selectedCard);
     playerHand.splice(index, 1);
     renderDiscardPile();
     opponentTurn();
-  } else {
-    console.log("Karte kann nicht gelegt werden.");
   }
 }
 
 /**
- * Ziehe eine bestimmte Anzahl Karten in eine Hand
- * @param {number} cards2Draw - Anzahl der zu ziehenden Karten
- * @param {Array} whichHand - Die Hand, in die die Karte(n) gezogen werden
+ * Draws a specified number of cards for a given hand.
+ * @param {number} cardsToDraw - Number of cards to draw.
+ * @param {Array} hand - The hand to which cards are added.
  */
-function drawCard(cards2Draw, whichHand) {
-  if (whichHand.length > 0) {
-    for (let i = 0; i < cards2Draw; i++) {
-      whichHand.push(shuffledDeck.shift());
-    }
-    renderPlayerHand();
-  } else {
-    console.log("Spiel noch nicht gestartet oder bereits gewonnen");
+function drawCard(cardsToDraw, hand) {
+  for (let i = 0; i < cardsToDraw; i++) {
+    hand.push(shuffledDeck.shift());
   }
+  renderPlayerHand();
 }
 
 /**
- * Gegnerzug: Prüft auf spielbare Karten oder zieht eine Karte
+ * Executes the opponent's turn. The opponent plays a valid card if available;
+ * otherwise, it draws a card.
  */
 async function opponentTurn() {
-  let playableCards = [];
-  playableCards.splice(0, playableCards.length);
-  let card;
+  const playableCards = [];
   for (let i = 0; i < cpuHand.length; i++) {
-    card = cpuHand[i];
+    const card = cpuHand[i];
     if (card.cardValue === discardPile[0].cardValue || card.symbol === discardPile[0].symbol) {
-      let newCard = card;
-      newCard.index = i;
-      playableCards.push(newCard);
+      playableCards.push({ ...card, index: i });
     }
   }
+
   await sleep(1000);
+
   if (playableCards.length > 0) {
-    console.log(playableCards[0]);
-    console.log("opponent played " + playableCards[0].symbol + " " + playableCards[0].cardValue);
-    // Zufällige Karte abwerfen für natürlicheres Spiel
-    let randomIndex = Math.floor(Math.random() * cpuHand.length);
-    discardPile.unshift(cpuHand[playableCards[0].index]);
-    cpuHand.splice(playableCards[0].index, 1);
+    const cardIndex = playableCards[0].index;
+    discardPile.unshift(cpuHand[cardIndex]);
+    cpuHand.splice(cardIndex, 1);
     renderDiscardPile();
-    opponentHandDiv
-    cardToRemove = opponentHandDiv.children[randomIndex];
-    opponentHandDiv.removeChild(cardToRemove);
 
-
+    // Remove a random card element from the opponent's hand display
+    if (opponentHandDiv.children.length > 0) {
+      const randomIndex = Math.floor(Math.random() * opponentHandDiv.children.length);
+      opponentHandDiv.removeChild(opponentHandDiv.children[randomIndex]);
+    }
   } else {
-    console.log("gegner muss ziehen");
     drawCard(1, cpuHand);
-    const cardToAdd = opponentHandDiv.children[0];
-    const clonedCard = cardToAdd.cloneNode(true);
-    opponentHandDiv.appendChild(clonedCard);
-
-
+    // Clone a card element to represent the new card in the opponent's hand display
+    if (opponentHandDiv.children.length > 0) {
+      const cardToAdd = opponentHandDiv.children[0];
+      const clonedCard = cardToAdd.cloneNode(true);
+      opponentHandDiv.appendChild(clonedCard);
+    }
   }
+
   roundCounterDiv.innerHTML = turn++;
 }
 
-function sieben(){
-  // draw 2
+
+// ==========================================================================
+// Additional / Placeholder Functions
+// ==========================================================================
+
+/**
+ * Placeholder for the "Sieben" card action (e.g., force opponent to draw 2 cards).
+ */
+function sieben() {
+  // TODO: Implement "draw 2" functionality.
 }
 
-function acht(){
-  // aussetzen
+/**
+ * Placeholder for the "Acht" card action (e.g., skip the opponent's turn).
+ */
+function acht() {
+  // TODO: Implement "skip turn" functionality.
 }
 
-function bube(){
-  // wünsch dir was
+/**
+ * Placeholder for the "Bube" card action (e.g., allow suit change).
+ */
+function bube() {
+  // TODO: Implement "choose suit" functionality.
 }
 
-function modal(kind){
-  if (kind == "startScreen"){
+/**
+ * Displays a modal based on the provided type.
+ * @param {string} kind - The type of modal to display ("startScreen", "chooseColor", etc.).
+ */
+function modal(kind) {
+  if (kind === "startScreen") {
+    // TODO: Implement start screen modal.
+  } else if (kind == "chooseColor") {
+    container = document.getElementById("modal")
+    console.log("JUP")
+    container.innerHTML = ""
+    wrapperElement = document.createElement("div")
+    innerWrapperElement = document.createElement("div")
+    innerWrapperElement.classList.add("modal-center")
+    innerWrapperElement.innerHTML = "<h3>Choose Color</h3>"
+    container.appendChild(innerWrapperElement)
+    wrapperElement.classList.add("modal-center-color-wr")
+    innerWrapperElement.appendChild(wrapperElement)
 
-  }
-  else if(kind == "chooseColor"){
-
+      for (card of cardSuits){
+        const cardElement = document.createElement("div");
+        cardElement.classList.add("card");
+        cardElement.classList.add("player-hand")
+        cardElement.setAttribute("onclick", "turnColor(this);");
+        const textColor = card.color === "rot" ? "red" : "black";
+        // Create card elements for top, center, and bottom
+        const topDiv = document.createElement("div");
+        topDiv.classList.add("card-top");
+        topDiv.textContent = `${card.symbol}`;
+        topDiv.style.color = textColor;
+        const centerDiv = document.createElement("div");
+        centerDiv.classList.add("card-center");
+        centerDiv.textContent = card.symbol;
+        centerDiv.style.color = textColor;
+        centerDiv.style.fontSize = "42px";
+        const bottomDiv = document.createElement("div");
+        bottomDiv.classList.add("card-bottom");
+        bottomDiv.textContent = `${card.symbol}`;
+        bottomDiv.style.color = textColor;
+        bottomDiv.style.transform = "rotate(180deg)";
+        cardElement.appendChild(topDiv);
+        cardElement.appendChild(centerDiv);
+        cardElement.appendChild(bottomDiv);
+        wrapperElement.appendChild(cardElement);
+      }
+    container.classList.toggle("hidden");
+    // TODO: Implement choose color modal.
   }
 }
 
 /**
- * Klick-Handler: Spieler zieht eine Karte und der Gegner ist dran
+ * Event handler for when the player clicks to draw a card.
  */
 function clickDraw() {
   drawCard(1, playerHand);
   opponentTurn();
 }
 
-function dropCard(){
-  dropArea.addEventListener('dragover', (event) => {
+/**
+ * Initializes the drop area for drag-and-drop card playing.
+ */
+function initializeDropArea() {
+  dropArea.addEventListener("dragover", (event) => {
     event.preventDefault();
   });
-  dropArea.addEventListener('drop',(event) =>{
+  dropArea.addEventListener("drop", (event) => {
     event.preventDefault();
-    console.log("Hallo DROP")
-    playerTurn(draggedElement)
-  })
+    playerTurn(draggedElement);
+  });
 }
 
-// --------------------------------------------------------------------------
-// Utility-Funktionen
-// --------------------------------------------------------------------------
+// ==========================================================================
+// Utility Functions
+// ==========================================================================
 
 /**
- * Hilfsfunktion für Verzögerungen
- * @param {number} ms - Zeit in Millisekunden
+ * Delays execution for a specified number of milliseconds.
+ * @param {number} ms - Milliseconds to delay.
+ * @returns {Promise<void>}
  */
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-/**
- * Debug-Funktion: Zeige die oberste Karte des Ablagestapels
- */
-function showDiscard() {
-  console.log(discardPile[0]);
-}
+
