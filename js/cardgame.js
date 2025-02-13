@@ -254,6 +254,27 @@ async function opponentTurn() {
   roundCounterDiv.innerHTML = turn++;
 }
 
+function sieben(){
+  // draw 2
+}
+
+function acht(){
+  // aussetzen
+}
+
+function bube(){
+  // wünsch dir was
+}
+
+function modal(kind){
+  if (kind == "startScreen"){
+
+  }
+  else if(kind == "chooseColor"){
+
+  }
+}
+
 /**
  * Klick-Handler: Spieler zieht eine Karte und der Gegner ist dran
  */
