@@ -6,7 +6,10 @@ body {
   height: 100vh;
   margin: 0;
   background-color: beige; /*#142617;*/
-  font-family: Arial, sans-serif;
+  font-family: "Fira Code", serif;
+  font-optical-sizing: auto;
+  font-weight: 700;
+  font-style: normal;
 }
 .nav {
   width: 100%;
@@ -21,7 +24,39 @@ body {
   flex-direction: row;
   justify-content: space-evenly;
 }
+.gameTitle{
+  font-weight: 900;
+  font-size: xxx-large;
+  text-align: center;
+  /*! background: pink; */
+  border-radius: 70rem;
+  /*! padding: 20rem; */
+  color: pink;
+  margin-bottom: 5rem;
+}
+
+.btn {
+  font-family: "Fira Code", serif;
+  text-transform: uppercase;
+  transition-property: all;
+  transition-duration: 0.6s;
+  transition-timing-function: ease;
+}
+
 button{
+  width: 20rem;
+  background: none;
+  border: none;
+  color: pink;
+  font-family: "Fira Code", serif;
+  text-transform: uppercase;
+  transition-property: font-size, font-weight, width, height;
+  transition: transform 6s ease-in-out;
+  transition-duration: 0.6s;
+  transition-timing-function: ease;
+}
+
+xbutton{
   height: 12vh;
   width: 16vh;
   max-height: 39px;
@@ -103,9 +138,9 @@ button{
 }
 /* --    Alles   -- */
 *{
-    -webkit-user-select: none; /* Safari */
-    -ms-user-select: none; /* IE 10 and IE 11 */
-    user-select: none; /* Standard syntax */
+  -webkit-user-select: none; /* Safari */
+  -ms-user-select: none; /* IE 10 and IE 11 */
+  user-select: none; /* Standard syntax */
 }
 .player-hand .card:hover{
   transform: scale(104%);
@@ -121,10 +156,13 @@ button{
   transition: transform 0.08s ease-in-out; /* Dauer: 0,5s */
 }
 button:hover{
-  transform: scale(104%);
+  transform: scale(103%);
   z-index: 6;
-  box-shadow: 0 1px 3px 3px rgba(0,0,0,0.4), 0 25px 2px -5px rgba(255,255,255,0.6) inset;
+  /*box-shadow: 0 1px 3px 3px rgba(0,0,0,0.4), 0 25px 2px -5px rgba(255,255,255,0.6) inset;*/
   font-weight: bold;
+  background: none;
+  text-decoration: underline;
+  text-decoration-color: rgb(44,44,44);
 }
 button:active{
   transform: scale(104%);
@@ -139,17 +177,17 @@ button:active{
 
 
 .stapel{
-    display: grid;
-    place-content: center;
+  display: grid;
+  place-content: center;
 
-    > * {
-      grid-area: 1 / 1;
-    }
+  > * {
+    grid-area: 1 / 1;
   }
+}
 
 
 #ziehstapel{
-  z-index: 100;
+  z-index: 999;
   display: flex;
   flex-direction: row;
   justify-content: space-evenly;
@@ -161,9 +199,34 @@ button:active{
   transform: rotate(45deg);
 }
 #doubelstapel{
-  z-index: 10;
+  z-index: 900;
   margin-left: 2px;
   margin-top: 2px;
+  border:2px beige solid;
+}
+#doubelstapel2{
+  z-index: 890;
+  margin-left: 4px;
+  margin-top: 4px;
+  border:2px white solid;
+}
+#doubelstapel3{
+  z-index: 880;
+  margin-left: 6px;
+  margin-top: 6px;
+  border:2px grey solid;
+}
+#doubelstapel4{
+  z-index: 870;
+  margin-left: 8px;
+  margin-top: 8px;
+  border:2px ghostwhite solid;
+}
+#doubelstapel5{
+  z-index: 860;
+  margin-left: 10px;
+  margin-top: 10px;
+  border:2px darkgray solid;
 }
 
 
@@ -174,7 +237,7 @@ button:active{
   position: absolute;
   width: 100%;
   height: 100%;
-  background-color: rgba(66,66,66,0.9);
+  background-color: rgba(66,66,66,1);
   z-index: 1000;
 }
 
@@ -201,10 +264,10 @@ button:active{
 }
 
 .modal-center-color-wr {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: 1fr 1fr;
-  }
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+}
 
 .modal-center-color-wr .card {
   margin: 1vw;
@@ -247,13 +310,16 @@ button:active{
   transform: scale(1.1);
 }
 
-.modal-center button {
+.modal-center xbutton {
   width: 100%;
   height: 26%;
   max-height: none;
   max-width: none;
 }
 
+.startScreen{
+  font-size: xxx-large;
+}
 
 .hidden {
   display: none !important;

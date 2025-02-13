@@ -5,6 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Kartenspiel</title>
   <link rel="stylesheet" href="css/cardgame.css">
+  <!-- Google Webfonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300..700&display=swap" rel="stylesheet">
+  <!-- /------------- --->
 </head>
 <body>
 <div class="nav"><div class="subNav"></div><div class="subNav">Runde: <span id="round">0</span></div><div class="subNav"></div></div>
@@ -20,6 +25,10 @@
     <div class="stapel">
        <div class="deck" id="ziehstapel" draggable="true" onclick="clickDraw()"><div>Ziehstapel</div></div>
        <div class="deck" id="doubelstapel">Dupli</div>
+      <div class="deck" id="doubelstapel2">Dupli</div>
+      <div class="deck" id="doubelstapel3">Dupli</div>
+      <div class="deck" id="doubelstapel4">Dupli</div>
+      <div class="deck" id="doubelstapel5">Dupli</div>
     </div>
     <div class="discard" onclick="">Ablagestapel</div>
   </div>
@@ -33,8 +42,10 @@
 </div>
 <div id="modal" class="">
     <div class="modal-center">
-      <button id="startGame" onclick="startGame()">Start Game</button>
-      <button id="1LeaderBoard">Leaderboard</button>
+      <h1 class="gameTitle">- MauMau -</h1>
+      <button id="startGame" class="startScreen" onclick="startGame()">Start Game</button>
+      <button id="1LeaderBoard" class="startScreen">Leaderboard</button>
+      <button id="Settings" class="startScreen">Settings</button>
     </div>
 </div>
 

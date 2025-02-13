@@ -10,7 +10,7 @@ const cardSuits = [
   { symbol: "♦", name: "Karo", color: "rot" }
 ];
 
-const cardValues = ["7", "8", "9", "10", "Bube", "Dame", "König", "Ass"];
+const cardValues = ["7", "8", "9", "10", "J", "Q", "K", "A"];
 
 let turn = 1;
 let deck = [];
@@ -70,7 +70,6 @@ function getBestColor(hand) {
 // ==========================================================================
 // DECK-FUNKTIONEN
 // ==========================================================================
-
 /**
  * Erzeugt ein neues Deck mit allen Karten.
  * @returns {Array} Array mit Kartenobjekten.
@@ -276,10 +275,10 @@ function handleSpecialCard(specialCard, targetHand, playedBy = "player") {
       return Promise.resolve();
     case "8":
       console.log("Achter gespielt");
-      // Hier könnte z. B. der nächste Zug übersprungen werden.
+      aussetzen(playedBy);
       return Promise.resolve();
-    case "Bube":
-      console.log("Bube gespielt");
+    case "J":
+      console.log("Jack gespielt");
       // Beim Gegner (cpu) nicht interaktiv – Animation und clevere Farbauswahl
       return chooseColor(playedBy === "cpu");
     default:
@@ -287,6 +286,15 @@ function handleSpecialCard(specialCard, targetHand, playedBy = "player") {
   }
 }
 
+function aussetzen(playedBy){
+  if (playedBy==="cpu"){
+    console.log("SpielerIN muss aussetzen")
+  }
+  else {
+    console.log("CPU muss aussetzen")
+  }
+
+}
 /**
  * Zieht eine bestimmte Anzahl Karten in die angegebene Hand.
  * @param {number} cardsToDraw - Anzahl der zu ziehenden Karten.
@@ -333,7 +341,6 @@ async function opponentTurn() {
   } else {
     drawCard(1, cpuHand);
   }
-
   roundCounterDiv.innerHTML = turn++;
   isPlayerTurn = true;
 }
