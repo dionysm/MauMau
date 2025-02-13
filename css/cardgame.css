@@ -234,7 +234,18 @@ button:active{
   grid-row: 2;
 }
 
+.nonInteractive .modal-center-color-wr .card {
+  pointer-events: none;
+}
 
+.computerHover {
+  margin: 1vw;
+  box-shadow:inset 0 0 150px 20px #6BBF80 !important;
+}
+.modal-center-color-wr .card.computerHover {
+  box-shadow: inset 0 0 150px 20px #6BBF80 !important;
+  transform: scale(1.1);
+}
 
 .modal-center button {
   width: 100%;
