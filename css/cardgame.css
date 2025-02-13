@@ -30,7 +30,7 @@ button{
   border: none;
   border-radius: 2px;
   transition: transform 0.08s ease-in-out; /* Dauer: 0,5s */
-  box-shadow:  0px 25px 2px -5px rgba(255,255,255,0.5) inset;
+  box-shadow:  0 25px 2px -5px rgba(255,255,255,0.5) inset;
 }
 .subNav{
   display: flex;
@@ -110,12 +110,12 @@ button{
 .player-hand .card:hover{
   transform: scale(104%);
   z-index: 6;
-  box-shadow: inset 0 0 0 1000px rgba(255,255,255,.7), 0px 3px 12px 7px rgba(255,255,255,0.9);
+  box-shadow: inset 0 0 0 1000px rgba(255,255,255,.7), 0 3px 12px 7px rgba(255,255,255,0.9);
 }
 .deck-area .deck:hover{
   transform: scale(104%);
   z-index: 6;
-  box-shadow: 0px 3px 12px 0px rgba(0,0,0,0.4);
+  box-shadow: 0 3px 12px 0 rgba(0,0,0,0.4);
 }
 .deck-area .deck {
   transition: transform 0.08s ease-in-out; /* Dauer: 0,5s */
@@ -123,13 +123,13 @@ button{
 button:hover{
   transform: scale(104%);
   z-index: 6;
-  box-shadow: 0px 1px 3px 3px rgba(0,0,0,0.4), 0px 25px 2px -5px rgba(255,255,255,0.6) inset;
+  box-shadow: 0 1px 3px 3px rgba(0,0,0,0.4), 0 25px 2px -5px rgba(255,255,255,0.6) inset;
   font-weight: bold;
 }
 button:active{
   transform: scale(104%);
   z-index: 6;
-  box-shadow: 0px 1px 3px 3px rgba(0,0,0,0.4), 0px 25px 2px -5px rgba(0,0,0,0.2) inset;
+  box-shadow: 0 1px 3px 3px rgba(0,0,0,0.4), 0 25px 2px -5px rgba(0,0,0,0.2) inset;
   font-weight: bold;
 }
 
@@ -138,10 +138,27 @@ button:active{
 }
 
 
+.stapel{
+    display: grid;
+    place-content: center;
+
+    > * {
+      grid-area: 1 / 1;
+    }
+  }
 
 
+#ziehstapel{
+z-index: 100;
 
 
+}
+
+#doubelstapel{
+  z-index: 10;
+  margin-left: 2px;
+  margin-top: 2px;
+}
 
 
 

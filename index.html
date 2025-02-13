@@ -17,7 +17,10 @@
     <div class="card opponentCard"></div>
   </div>
   <div class="deck-area">
-    <div class="deck" onclick="drawCard(1)">Ziehstapel</div>
+    <div class="stapel">
+       <div class="deck" id="ziehstapel" draggable="true" onclick="clickDraw()">Ziehstapel</div>
+       <div class="deck" id="doubelstapel">Dupli</div>
+    </div>
     <div class="discard" onclick="showDiscard()">Ablagestapel</div>
   </div>
   <div class="player-hand">
