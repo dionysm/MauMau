@@ -197,7 +197,6 @@ function playerTurn(card) {
     card.remove();
     discardPile.unshift(selectedCard);
     renderDiscardPile();
-
     // Anschließend Spezialeffekte ausführen
     specialCards(selectedCard, cpuHand);
     opponentTurn();
