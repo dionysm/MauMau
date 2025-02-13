@@ -13,10 +13,11 @@ const cardValues = ["7", "8", "9", "10", "Bube", "Dame", "König", "Ass"];
 
 let turn = 1;
 let deck;
-let deckShuffled = [];
-let handCPU = [];
-let handPlayer = [];
+let shuffledDeck = [];
+let cpuHand = [];
+let playerHand = [];
 let discardPile = [];
+let draggedElement = null;
 
 // --------------------------------------------------------------------------
 // DOM Elemente
@@ -24,7 +25,7 @@ let discardPile = [];
 
 const roundCounterDiv = document.getElementById("round");
 const opponentHandDiv = document.getElementById("opponentHand");
-
+const dropArea = document.getElementById('discardDrop');
 // --------------------------------------------------------------------------
 // Deck-Funktionen: Initialisierung und Mischen
 // --------------------------------------------------------------------------
@@ -73,14 +74,15 @@ function shuffleDeck(array) {
 /**
  * Erste Runde: Karten austeilen
  */
-function firstRound() {
+function dealInitialHands() {
   for (let i = 0; i < 5; i++) {
-    handPlayer.push(deckShuffled.shift());
-    handCPU.push(deckShuffled.shift());
+    playerHand.push(shuffledDeck.shift());
+    cpuHand.push(shuffledDeck.shift());
   }
-  discardPile.push(deckShuffled.shift());
+  discardPile.push(shuffledDeck.shift());
   renderPlayerHand();
   renderDiscardPile();
+  dropCard()
 }
 
 /**
@@ -89,8 +91,8 @@ function firstRound() {
 function startGame() {
   // 🎴 Initialisiere und mische das Deck
   deck = initializeDeck();
-  deckShuffled = shuffleDeck(deck);
-  firstRound();
+  shuffledDeck = shuffleDeck(deck);
+  dealInitialHands();
 }
 
 // --------------------------------------------------------------------------
@@ -118,6 +120,10 @@ function renderCards(containerSelector, cards, showOnlyTop = false) {
     cardElement.classList.add("card");
     cardElement.setAttribute("onclick", "playerTurn(this);");
     cardElement.setAttribute("draggable", "true");
+
+    cardElement.addEventListener('dragstart', function() {
+      draggedElement = this;
+    });
 
     // Textfarbe anhand der Kartenfarbe setzen
     let textColor = card.color === "rot" ? "red" : "black";
@@ -154,11 +160,11 @@ function renderCards(containerSelector, cards, showOnlyTop = false) {
  * Render-Funktion für die Spielerhand
  */
 function renderPlayerHand() {
-  renderCards(".player-hand", handPlayer);
+  renderCards(".player-hand", playerHand);
 }
 
 function renderCPUHand(){
-  renderCards(".opponent-hand", handCPU)
+  renderCards(".opponent-hand", cpuHand)
 }
 
 
@@ -179,11 +185,11 @@ function renderDiscardPile() {
  */
 function playerTurn(card) {
   let index = Array.from(card.parentNode.children).indexOf(card);
-  if (handPlayer[index].cardValue === discardPile[0].cardValue || handPlayer[index].symbol === discardPile[0].symbol) {
-    console.log(handPlayer[index]);
+  if (playerHand[index].cardValue === discardPile[0].cardValue || playerHand[index].symbol === discardPile[0].symbol) {
+    console.log(playerHand[index]);
     card.remove();
-    discardPile.unshift(handPlayer[index]);
-    handPlayer.splice(index, 1);
+    discardPile.unshift(playerHand[index]);
+    playerHand.splice(index, 1);
     renderDiscardPile();
     opponentTurn();
   } else {
@@ -199,7 +205,7 @@ function playerTurn(card) {
 function drawCard(cards2Draw, whichHand) {
   if (whichHand.length > 0) {
     for (let i = 0; i < cards2Draw; i++) {
-      whichHand.push(deckShuffled.shift());
+      whichHand.push(shuffledDeck.shift());
     }
     renderPlayerHand();
   } else {
@@ -214,8 +220,8 @@ async function opponentTurn() {
   let playableCards = [];
   playableCards.splice(0, playableCards.length);
   let card;
-  for (let i = 0; i < handCPU.length; i++) {
-    card = handCPU[i];
+  for (let i = 0; i < cpuHand.length; i++) {
+    card = cpuHand[i];
     if (card.cardValue === discardPile[0].cardValue || card.symbol === discardPile[0].symbol) {
       let newCard = card;
       newCard.index = i;
@@ -227,9 +233,9 @@ async function opponentTurn() {
     console.log(playableCards[0]);
     console.log("opponent played " + playableCards[0].symbol + " " + playableCards[0].cardValue);
     // Zufällige Karte abwerfen für natürlicheres Spiel
-    let randomIndex = Math.floor(Math.random() * handCPU.length);
-    discardPile.unshift(handCPU[playableCards[0].index]);
-    handCPU.splice(playableCards[0].index, 1);
+    let randomIndex = Math.floor(Math.random() * cpuHand.length);
+    discardPile.unshift(cpuHand[playableCards[0].index]);
+    cpuHand.splice(playableCards[0].index, 1);
     renderDiscardPile();
     opponentHandDiv
     cardToRemove = opponentHandDiv.children[randomIndex];
@@ -238,7 +244,7 @@ async function opponentTurn() {
 
   } else {
     console.log("gegner muss ziehen");
-    drawCard(1, handCPU);
+    drawCard(1, cpuHand);
     const cardToAdd = opponentHandDiv.children[0];
     const clonedCard = cardToAdd.cloneNode(true);
     opponentHandDiv.appendChild(clonedCard);
@@ -252,8 +258,19 @@ async function opponentTurn() {
  * Klick-Handler: Spieler zieht eine Karte und der Gegner ist dran
  */
 function clickDraw() {
-  drawCard(1, handPlayer);
+  drawCard(1, playerHand);
   opponentTurn();
+}
+
+function dropCard(){
+  dropArea.addEventListener('dragover', (event) => {
+    event.preventDefault();
+  });
+  dropArea.addEventListener('drop',(event) =>{
+    event.preventDefault();
+    console.log("Hallo DROP")
+    playerTurn(draggedElement)
+  })
 }
 
 // --------------------------------------------------------------------------
