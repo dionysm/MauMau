@@ -89,6 +89,7 @@ function dealInitialHands() {
  * Starte das Spiel: Initialisiere und mische das Deck, dann starte die erste Runde
  */
 function startGame() {
+  document.getElementById('modal').classList.toggle('hidden')
   // 🎴 Initialisiere und mische das Deck
   deck = initializeDeck();
   shuffledDeck = shuffleDeck(deck);

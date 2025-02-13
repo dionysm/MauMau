@@ -161,7 +161,10 @@ z-index: 100;
 }
 
 
-#modal{
+#modal {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr 1fr;
   position: absolute;
   width: 100%;
   height: 100%;
@@ -169,8 +172,28 @@ z-index: 100;
   z-index: 1000;
 }
 
+.modal-center {
+  grid-column: 2;
+  grid-row: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+.modal-center button {
+  width: 100%;
+  height: 26%;
+  max-height: none;
+  max-width: none;
+}
 
 
+.hidden {
+  display: none !important;
+}
 /* FÄCHERE KARTEN AUF
 .player-hand .card:nth-child(1) {
   transform: rotate(-15deg) translateY(-20px) translateX(55px);

@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="css/cardgame.css">
 </head>
 <body>
-<div class="nav"><div class="subNav"><button id="LeaderBoard">Leaderboard</button></div><div class="subNav">Runde: <span id="round">0</span></div><div class="subNav"><button id="startGame" onclick="startGame()">Start Game</button></div></div>
+<div class="nav"><div class="subNav"></div><div class="subNav">Runde: <span id="round">0</span></div><div class="subNav"></div></div>
 <div class="game-container">
   <div id="opponentHand" class="opponent-hand">
     <div class="card opponentCard"></div>
@@ -31,7 +31,13 @@
     <div class="card" onclick="playerTurn(this)"></div>
   </div>
 </div>
-<div id="modal"></div>
+<div id="modal">
+    <div class="modal-center">
+      <button id="startGame" onclick="startGame()">Start Game</button>
+      <button id="1LeaderBoard">Leaderboard</button>
+    </div>
+</div>
+
 </body>
 <script src="js/cardgame.js"></script>
 </html>
