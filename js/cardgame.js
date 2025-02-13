@@ -192,13 +192,32 @@ function playerTurn(card) {
   const topDiscard = discardPile[0];
 
   if (selectedCard.cardValue === topDiscard.cardValue || selectedCard.symbol === topDiscard.symbol) {
+    // Zuerst aus dem Spielzustand entfernen
+    playerHand.splice(index, 1);
     card.remove();
     discardPile.unshift(selectedCard);
-    playerHand.splice(index, 1);
     renderDiscardPile();
+
+    // Anschließend Spezialeffekte ausführen
+    specialCards(selectedCard, cpuHand);
     opponentTurn();
   }
 }
+
+
+function specialCards(specialcard, whichHand){
+  if (specialcard.cardValue === "7"){
+    console.log("Siebener gespielt")
+    sieben(whichHand)
+  }
+  if (specialcard.cardValue === "8"){
+    console.log("achter gespielt")
+  }
+  if (specialcard.cardValue === "Bube"){
+    console.log("bube gespielt")
+  }
+}
+
 
 /**
  * Draws a specified number of cards for a given hand.
@@ -208,6 +227,13 @@ function playerTurn(card) {
 function drawCard(cardsToDraw, hand) {
   for (let i = 0; i < cardsToDraw; i++) {
     hand.push(shuffledDeck.shift());
+   if (hand === cpuHand){
+     if (opponentHandDiv.children.length > 0) {
+       const cardToAdd = opponentHandDiv.children[0];
+       const clonedCard = cardToAdd.cloneNode(true);
+       opponentHandDiv.appendChild(clonedCard);
+     }
+   }
   }
   renderPlayerHand();
 }
@@ -219,9 +245,9 @@ function drawCard(cardsToDraw, hand) {
 async function opponentTurn() {
   const playableCards = [];
   for (let i = 0; i < cpuHand.length; i++) {
-    const card = cpuHand[i];
-    if (card.cardValue === discardPile[0].cardValue || card.symbol === discardPile[0].symbol) {
-      playableCards.push({ ...card, index: i });
+    const CPUcard = cpuHand[i];
+    if (CPUcard.cardValue === discardPile[0].cardValue || CPUcard.symbol === discardPile[0].symbol) {
+      playableCards.push({ ...CPUcard, index: i });
     }
   }
 
@@ -229,6 +255,7 @@ async function opponentTurn() {
 
   if (playableCards.length > 0) {
     const cardIndex = playableCards[0].index;
+    specialCards(cpuHand[cardIndex],playerHand)
     discardPile.unshift(cpuHand[cardIndex]);
     cpuHand.splice(cardIndex, 1);
     renderDiscardPile();
@@ -241,11 +268,6 @@ async function opponentTurn() {
   } else {
     drawCard(1, cpuHand);
     // Clone a card element to represent the new card in the opponent's hand display
-    if (opponentHandDiv.children.length > 0) {
-      const cardToAdd = opponentHandDiv.children[0];
-      const clonedCard = cardToAdd.cloneNode(true);
-      opponentHandDiv.appendChild(clonedCard);
-    }
   }
 
   roundCounterDiv.innerHTML = turn++;
@@ -259,8 +281,9 @@ async function opponentTurn() {
 /**
  * Placeholder for the "Sieben" card action (e.g., force opponent to draw 2 cards).
  */
-function sieben() {
+function sieben(whichHand) {
   // TODO: Implement "draw 2" functionality.
+  drawCard(2, whichHand);
 }
 
 /**
