@@ -282,10 +282,10 @@ function bube() {
  * @param {string} kind - The type of modal to display ("startScreen", "chooseColor", etc.).
  */
 function modal(kind) {
+  container = document.getElementById("modal")
   if (kind === "startScreen") {
     // TODO: Implement start screen modal.
-  } else if (kind == "chooseColor") {
-    container = document.getElementById("modal")
+  } else if (kind === "chooseColor") {
     console.log("JUP")
     container.innerHTML = ""
     wrapperElement = document.createElement("div")
@@ -324,6 +324,11 @@ function modal(kind) {
       }
     container.classList.toggle("hidden");
     // TODO: Implement choose color modal.
+  }
+  else if (kind === "takeTurns"){
+    container.innerHTML = "<h1>Runde</h1>"
+    container.classList.toggle("hidden");
+
   }
 }
 
