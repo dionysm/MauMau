@@ -149,7 +149,7 @@ button:active{
 
 
 #ziehstapel{
-z-index: 100;
+  z-index: 100;
   display: flex;
   flex-direction: row;
   justify-content: space-evenly;
@@ -157,7 +157,9 @@ z-index: 100;
 
 
 }
-
+#ziehstapel div:first-child{
+  transform: rotate(45deg);
+}
 #doubelstapel{
   z-index: 10;
   margin-left: 2px;
