@@ -142,7 +142,7 @@ function renderCards(containerSelector, cards, showOnlyTop = false, hideDetails 
       // Zeigt nur Rückseite (z. B. Fragezeichen) an
       cardElement.innerHTML = `<div class="card-back-text"></div>`;
     } else {
-      const textColor = card.color === "rot" ? "red" : "black";
+      const textColor = card.color === "rot" ? "pink" : "grey";
 
       const topDiv = document.createElement("div");
       topDiv.classList.add("card-top");
@@ -395,7 +395,7 @@ function modal(kind, resolveCallback, nonInteractive = false, whichplayer = "") 
     cardSuits.forEach(suit => {
       const cardElement = document.createElement("div");
       cardElement.classList.add("card", "player-hand");
-      const textColor = suit.color === "rot" ? "red" : "black";
+      const textColor = suit.color === "rot" ? "pink" : "grey";
 
       const topDiv = document.createElement("div");
       topDiv.classList.add("card-top");

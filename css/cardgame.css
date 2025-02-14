@@ -168,7 +168,7 @@ xbutton{
 /* Child .card of .player-hand and .discard .card */
 .player-hand .card, .discard .card {
   transition: transform 0.08s ease-in-out; /* Dauer: 0,5s */
-  box-shadow: inset 0 0 0 1000px rgba(255,255,255,.7);
+  /*! box-shadow: inset 0 0 0 1000px rgba(255,255,255,.7); */
   color: black;
 }
 
@@ -181,7 +181,7 @@ xbutton{
 .player-hand .card:hover{
   transform: scale(114%);
   z-index: 6;
-  box-shadow: inset 0 0 0 1000px rgba(255,255,255,.7), 0 0px 10px 3px rgba(0,0,0,0.9);
+  /*! box-shadow: inset 0 0 0 1000px rgba(255,255,255,.7), 0 0px 10px 3px rgba(0,0,0,0.9); */
 }
 .deck-area .deck:hover{
   transform: scale(104%);
@@ -213,7 +213,9 @@ button:active{
 
 .card-top, .card-bottom{
   text-align: justify;
-  font-size: x-large;
+  font-size: larger;
+  margin-left: 0.3rem;
+  margin-right: 0.3rem;
 }
 .card-top::after, .card-bottom::after {
   content: "";
@@ -419,4 +421,10 @@ button:active{
   }
 }
 
+.card-top::first-letter{
 
+  font-size: large;
+}
+.card-center{
+  font-size: xxx-large;
+}
