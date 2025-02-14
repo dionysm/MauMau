@@ -20,7 +20,7 @@ let playerHand = [];
 let discardPile = [];
 let draggedElement = null;
 
-// Variable, die steuert, ob der Spieler am Zug ist
+// Steuert, wessen Zug an der Reihe ist:
 let isPlayerTurn = true;
 
 // ==========================================================================
@@ -30,6 +30,7 @@ const roundCounterDiv = document.getElementById("round");
 const opponentHandDiv = document.getElementById("opponentHand");
 const dropArea = document.getElementById("discardDrop");
 const modalContainer = document.getElementById("modal");
+const turnHeader = document.getElementById("turn");
 
 // ==========================================================================
 // UTILITY FUNCTIONS
@@ -63,19 +64,19 @@ function getBestColor(hand) {
       bestColor = symbol;
     }
   }
-  // Fallback, falls die Hand leer ist
   return bestColor || cardSuits[0].symbol;
 }
 
 // ==========================================================================
 // DECK-FUNKTIONEN
 // ==========================================================================
+
 /**
  * Erzeugt ein neues Deck mit allen Karten.
  * @returns {Array} Array mit Kartenobjekten.
  */
 function initializeDeck() {
-  renderTurn()
+  renderTurn();
   const newDeck = [];
   for (const suit of cardSuits) {
     for (const value of cardValues) {
@@ -136,7 +137,7 @@ function renderCards(containerSelector, cards, showOnlyTop = false, hideDetails 
       cardElement.addEventListener("dragstart", () => {
         draggedElement = cardElement;
       });
-        cardElement.setAttribute("onclick", "playerTurn(this);")
+      cardElement.setAttribute("onclick", "playerTurn(this);");
     }
 
     if (hideDetails) {
@@ -195,6 +196,19 @@ function renderDiscardPile() {
   renderCards(".discard", discardPile, true);
 }
 
+/**
+ * Aktualisiert die Anzeige, wessen Zug aktuell ist.
+ */
+function renderTurn() {
+  if (isPlayerTurn) {
+    turnHeader.innerHTML = "Your Turn";
+    turnHeader.style.color = "#94F29B";
+  } else {
+    turnHeader.innerHTML = "CPUs Turn";
+    turnHeader.style.color = "#F294B6";
+  }
+}
+
 // ==========================================================================
 // SPIELSETUP-FUNKTIONEN
 // ==========================================================================
@@ -223,6 +237,7 @@ function startGame() {
   shuffledDeck = shuffleDeck(deck);
   dealInitialHands();
   isPlayerTurn = true;
+  renderTurn();
 }
 
 // ==========================================================================
@@ -234,30 +249,84 @@ function startGame() {
  * @param {HTMLElement} card - Das angeklickte Karten-Element.
  */
 async function playerTurn(card) {
-  if (!isPlayerTurn) return; // Spielerzug nur, wenn Spieler am Zug ist
+  if (!isPlayerTurn) return; // Zug nur zulassen, wenn Spieler am Zug ist.
   isPlayerTurn = false;
-  renderTurn()
+  renderTurn();
+
   const index = Array.from(card.parentNode.children).indexOf(card);
   const selectedCard = playerHand[index];
   const topDiscard = discardPile[0];
 
-  // Gültigkeitsprüfung
+  // Gültigkeitsprüfung:
   if (selectedCard.cardValue === topDiscard.cardValue || selectedCard.symbol === topDiscard.symbol) {
+    // Karte aus Spielerhand entfernen und in den Ablagestapel legen.
     playerHand.splice(index, 1);
     card.remove();
     discardPile.unshift(selectedCard);
     renderDiscardPile();
-    gameOver("player", playerHand)
+    gameOver("player", playerHand);
 
-    // Spezialaktionen (z. B. Farbwahl beim Bube)
+    // Spezialaktionen abarbeiten (z. B. Farbwahl beim Bube, Zieh-Effekt bei Sieben).
     await handleSpecialCard(selectedCard, cpuHand, "player");
 
-    // Nach Spielerzug: Gegner ist an der Reihe
-
-    opponentTurn();
+    if (selectedCard.cardValue === "8") {
+      // Bei einer 8: Gegner muss aussetzen – Spieler ist erneut am Zug.
+      isPlayerTurn = true;
+      renderTurn();
+    } else {
+      // Normaler Zugwechsel: Gegner ist an der Reihe.
+      opponentTurn();
+    }
   } else {
-    // Ungültiger Zug – Spieler darf erneut interagieren
+    // Ungültiger Zug – Spieler darf erneut interagieren.
     isPlayerTurn = true;
+  }
+}
+
+/**
+ * Verarbeitet den Zug des Gegners asynchron.
+ */
+async function opponentTurn() {
+  isPlayerTurn = false;
+  renderTurn();
+
+  // Sammle alle spielbaren Karten der CPU.
+  const playableCards = cpuHand.reduce((cards, cpuCard, index) => {
+    if (cpuCard.cardValue === discardPile[0].cardValue || cpuCard.symbol === discardPile[0].symbol) {
+      cards.push({ card: cpuCard, index });
+    }
+    return cards;
+  }, []);
+
+  await sleep(1000);
+
+  if (playableCards.length > 0) {
+    // CPU spielt die erste passende Karte.
+    const { card, index } = playableCards[0];
+    cpuHand.splice(index, 1);
+    discardPile.unshift(card);
+    renderDiscardPile();
+    renderCPUHand();
+    gameOver("cpu", cpuHand);
+
+    await handleSpecialCard(card, playerHand, "cpu");
+
+    if (card.cardValue === "8") {
+      // Bei einer 8: Spieler muss aussetzen – CPU spielt erneut.
+      await sleep(1000);
+      opponentTurn();
+    } else {
+      // Normaler Zugwechsel: Spieler ist an der Reihe.
+      isPlayerTurn = true;
+      renderTurn();
+      roundCounterDiv.innerHTML = turn++;
+    }
+  } else {
+    // Falls keine passende Karte vorhanden ist: CPU zieht eine Karte.
+    drawCard(1, cpuHand);
+    isPlayerTurn = true;
+    renderTurn();
+    roundCounterDiv.innerHTML = turn++;
   }
 }
 
@@ -276,30 +345,17 @@ function handleSpecialCard(specialCard, targetHand, playedBy = "player") {
       return Promise.resolve();
     case "8":
       console.log("Achter gespielt");
-      aussetzen(playedBy);
+      // Bei einer 8 wird im jeweiligen Zugverlauf der Turn-Wechsel angepasst.
       return Promise.resolve();
     case "J":
       console.log("Jack gespielt");
-      // Beim Gegner (cpu) nicht interaktiv – Animation und clevere Farbauswahl
+      // Beim Gegner (cpu) nicht interaktiv – Animation und clevere Farbauswahl.
       return chooseColor(playedBy === "cpu");
     default:
       return Promise.resolve();
   }
 }
 
-function aussetzen(playedBy){
-  if (playedBy==="cpu"){
-    isPlayerTurn = false
-    console.log("SpielerIN muss aussetzen")
-    opponentTurn()
-  }
-  else {
-    isPlayerTurn = true
-    console.log("CPU muss aussetzen")
-    playerTurn()
-  }
-
-}
 /**
  * Zieht eine bestimmte Anzahl Karten in die angegebene Hand.
  * @param {number} cardsToDraw - Anzahl der zu ziehenden Karten.
@@ -315,53 +371,6 @@ function drawCard(cardsToDraw, hand) {
     renderCPUHand();
   }
 }
-
-
-function renderTurn() {
-  turnHeader = document.getElementById('turn')
-  if (isPlayerTurn) {
-    turnHeader.innerHTML = "Your Turn"
-    turnHeader.style.color = "#94F29B";
-  } else {
-    turnHeader.innerHTML = "CPUs Turn"
-    turnHeader.style.color = "#F294B6";
-  }
-}
-/**
- * Führt den Zug des Gegners asynchron aus.
- */
-async function opponentTurn() {
-  isPlayerTurn = false;
-  renderTurn();
-  // Sammle alle spielbaren Karten
-  const playableCards = cpuHand.reduce((cards, cpuCard, index) => {
-    if (cpuCard.cardValue === discardPile[0].cardValue || cpuCard.symbol === discardPile[0].symbol) {
-      cards.push({ card: cpuCard, index });
-    }
-    return cards;
-  }, []);
-
-  await sleep(1000);
-
-  if (playableCards.length > 0) {
-    // Zuerst Karte aus der CPU-Hand entfernen und in den Ablagestapel einfügen
-    const { card, index } = playableCards[0];
-    cpuHand.splice(index, 1);
-    discardPile.unshift(card);
-    renderDiscardPile();
-    renderCPUHand();
-    gameOver("cpu",cpuHand)
-    // Jetzt Spezialaktionen abarbeiten – z.B. Farbwahl bei Bube
-    await handleSpecialCard(card, playerHand, "cpu");
-    // Nach der Spezialaktion wurde bereits turnColor auf discardPile[0] aufgerufen.
-  } else {
-    drawCard(1, cpuHand);
-  }
-  roundCounterDiv.innerHTML = turn++;
-  isPlayerTurn = true;
-  renderTurn()
-}
-
 
 /**
  * Lässt den Spieler per Klick eine Karte ziehen.
@@ -391,9 +400,9 @@ function chooseColor(nonInteractive = false) {
 /**
  * Zeigt je nach Typ ein Modal an.
  * @param {string} kind - Typ des Modals ("chooseColor", etc.).
- * @param {Function} resolveCallback - Callback, der beim Abschluss aufgerufen wird.
+ * @param {Function|null} resolveCallback - Callback, der beim Abschluss aufgerufen wird.
  * @param {boolean} [nonInteractive=false] - Wenn true, ist das Modal nicht interaktiv (CPU wählt).
- * @param {whichplayer} string - Gibt den Spieler an um den Gameover Screen richtig darzustellen
+ * @param {string} [whichplayer=""] - Gibt den Spieler an (für GameOver).
  */
 function modal(kind, resolveCallback, nonInteractive = false, whichplayer = "") {
   modalContainer.innerHTML = "";
@@ -402,23 +411,24 @@ function modal(kind, resolveCallback, nonInteractive = false, whichplayer = "") 
     const centerWrapper = document.createElement("div");
     centerWrapper.classList.add("modal-center");
     centerWrapper.id = "innerModal";
-    centerWrapper.innerHTML = "<h3 style='color: white;'>Wähle eine Farbe</h3>";
+
+    let text = nonInteractive ? "CPU wählt eine Farbe" : "Bitte wähle eine Farbe";
+    centerWrapper.innerHTML = `<h3 style='color: white!important;'>${text}</h3>`;
     modalContainer.appendChild(centerWrapper);
 
     const colorWrapper = document.createElement("div");
     colorWrapper.classList.add("modal-center-color-wr");
     centerWrapper.appendChild(colorWrapper);
 
-    // Erstelle für jeden Suit ein Karten-Element
+    // Erstelle für jeden Suit ein Karten-Element.
     cardSuits.forEach(suit => {
       const cardElement = document.createElement("div");
       cardElement.classList.add("card", "player-hand");
-      const textColor = suit.color === "rot" ? "#f294b6" : "white";
+      const textColor = suit.color === "rot" ? "#f294b6" : "black";
 
       const topDiv = document.createElement("div");
       topDiv.classList.add("card-top");
-      topDiv.textContent +=
-      topDiv.textContent += suit.symbol;
+      topDiv.textContent = suit.symbol;
       topDiv.style.color = textColor;
 
       const centerDiv = document.createElement("div");
@@ -440,7 +450,7 @@ function modal(kind, resolveCallback, nonInteractive = false, whichplayer = "") 
         cardElement.addEventListener("click", () => {
           turnColor(suit.symbol);
           modalContainer.classList.add("hidden");
-          resolveCallback();
+          if (resolveCallback) resolveCallback();
         });
       }
       colorWrapper.appendChild(cardElement);
@@ -448,96 +458,84 @@ function modal(kind, resolveCallback, nonInteractive = false, whichplayer = "") 
 
     modalContainer.classList.remove("hidden");
 
-    // Im nicht-interaktiven Modus (CPU) erfolgt eine Animation:
     if (nonInteractive) {
       modalContainer.classList.add("nonInteractive");
-      // CPU wählt die für sie beste Farbe (basierend auf ihrer Hand)
       const bestColor = getBestColor(cpuHand);
       const bestIndex = cardSuits.findIndex(suit => suit.symbol === bestColor);
       const cardElements = Array.from(colorWrapper.children);
       let currentIndex = 0;
-      const cycleInterval = 200;  // Zeit zwischen den Umschaltungen (ms)
-      const cycleDuration = 1500; // Gesamtdauer der Umschaltung (ms)
+      const cycleInterval = 200;  // ms
+      const cycleDuration = 1500; // ms
       const totalCycles = Math.floor(cycleDuration / cycleInterval);
       let cycles = 0;
 
       const interval = setInterval(() => {
-        // Entferne die Hervorhebung von allen
         cardElements.forEach(el => el.classList.remove("computerHover"));
-        // Hebe das aktuelle Element hervor
         cardElements[currentIndex].classList.add("computerHover");
         currentIndex = (currentIndex + 1) % cardElements.length;
         cycles++;
         if (cycles >= totalCycles) {
           clearInterval(interval);
-          // Nach der Animation: Setze die Hervorhebung auf die beste Farbe
           cardElements.forEach(el => el.classList.remove("computerHover"));
           cardElements[bestIndex].classList.add("computerHover");
-          // Lasse die Hervorhebung 0,5 Sekunden stehen
           setTimeout(() => {
-            console.log(bestColor)
             modalContainer.classList.remove("nonInteractive");
             modalContainer.classList.add("hidden");
             turnColor(bestColor);
-            resolveCallback();
+            if (resolveCallback) resolveCallback();
           }, 500);
         }
       }, cycleInterval);
     }
   }
-  // Weitere Modaltypen lassen sich hier ergänzen.
-  if (kind === "GameOver"){
-      if( whichplayer === "cpu"){
-        console.log("Verloren 😭!")
-        modalContainer.classList.remove("hidden");
-        centerWrapper = document.getElementById('modal')
-        const gameOverWrapper = document.createElement("div");
-        gameOverWrapper.classList.add("modal-center-color-wr");
-        gameOverWrapper.classList.add("gameover");
-        gameOverWrapper.style.gridColumn = "2"
-        gameOverWrapper.style.gridRow = "2"
-        centerWrapper.appendChild(gameOverWrapper);
-        gameOverWrapper.innerHTML = "<h1>\"Verloren 😭!\"</h1>"
-      }
-      else {
-        console.log("Gewonnen! Ü")
-        modalContainer.classList.remove("hidden");
-        centerWrapper = document.getElementById('modal')
-        const gameOverWrapper = document.createElement("div");
-        gameOverWrapper.classList.add("modal-center-color-wr");
-        gameOverWrapper.classList.add("gameover");
-        gameOverWrapper.style.gridColumn = "2"
-        gameOverWrapper.style.gridRow = "2"
-        centerWrapper.appendChild(gameOverWrapper);
-        gameOverWrapper.innerHTML = "<h1>\"Gewonnen 😍!\"</h1>"
-      }
 
+  if (kind === "GameOver") {
+    modalContainer.classList.remove("hidden");
+    const gameOverWrapper = document.createElement("div");
+    gameOverWrapper.classList.add("modal-center-color-wr", "gameover");
+    gameOverWrapper.style.gridColumn = "2";
+    gameOverWrapper.style.gridRow = "2";
 
-
-
-
-
-    modalContainer.toggleAttribute()
+    if (whichplayer === "cpu") {
+      console.log("Verloren 😭!");
+      gameOverWrapper.innerHTML = "<h1>\"Verloren 😭!\"</h1>";
+    } else {
+      console.log("Gewonnen! Ü");
+      gameOverWrapper.innerHTML = "<h1>\"Gewonnen 😍!\"</h1>";
+    }
+    modalContainer.appendChild(gameOverWrapper);
   }
 }
 
 /**
  * Aktualisiert die Farbe (bzw. das Symbol) der obersten Karte im Ablagestapel.
+ * @param {string} chosenSymbol - Das gewählte Symbol.
  */
 function turnColor(chosenSymbol) {
-  // Finde den passenden Suit anhand des Symbols
   const suit = cardSuits.find(s => s.symbol === chosenSymbol);
   if (suit) {
-    // Aktualisiere das Symbol und die Farbe des obersten Ablagestapel-Karte
     discardPile[0].symbol = suit.symbol;
     discardPile[0].color = suit.color;
     discardPile[0].name = suit.name;
-    // Optional: Falls fullName genutzt wird, kann auch dieser angepasst werden
     discardPile[0].fullName = `${discardPile[0].cardValue} ${suit.name}`;
   }
   renderDiscardPile();
 }
 
+/**
+ * Prüft, ob das Spiel vorbei ist.
+ * @param {string} whichPlayer - "player" oder "cpu".
+ * @param {Array} playersHand - Die Hand des Spielers bzw. der CPU.
+ */
+function gameOver(whichPlayer, playersHand) {
+  if (playersHand.length <= 0) {
+    if (whichPlayer === "cpu") {
+      modal("GameOver", null, false, "cpu");
+    } else {
+      modal("GameOver", null, false, "player");
+    }
+  }
+}
 
 // ==========================================================================
 // EVENT-HANDLER & INITIALISIERUNG
@@ -556,27 +554,16 @@ function initializeDropArea() {
   });
 }
 
-function gameOver(whichPlayer, playersHand) {
-  if (playersHand.length <= 0){
-    if (whichPlayer === "cpu") {
-      modal("GameOver",null,null,"cpu")
-    }
-    else{
-      modal("GameOver",null,null,"player")
-    }
-  }
-
-}
-
 /**
  * Platzhalter für zukünftige Erweiterungen (z. B. Tastaturnavigation).
  */
 function keyboardNavigation(){
-  console.log("nothing")
-  //LEER
+  console.log("nothing");
+  // LEER
 }
 
 // ==========================================================================
 // SPIELSTART
 // ==========================================================================
-//startGame();
+// Zum Spielstart einfach startGame() aufrufen:
+// startGame();
