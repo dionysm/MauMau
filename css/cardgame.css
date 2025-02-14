@@ -5,15 +5,52 @@ body {
   justify-content: center;
   height: 100vh;
   margin: 0;
-  background-color: beige; /*#142617;*/
   font-family: "Fira Code", serif;
   font-optical-sizing: auto;
   font-weight: 700;
   font-style: normal;
+  background: radial-gradient(circle, rgba(99,111,125,1) 0%, rgba(238,174,202,1) 87%, rgba(99,111,125,1) 100%);
+  animation: smoothAnim ease infinite;
 }
+
+@keyframes smoothAnim {
+  0% {
+    background: radial-gradient(circle, rgba(99,111,125,1) 1%, rgba(238,174,202,1) 86%, rgba(99,111,125,1) 100%);
+
+  }
+  10% {
+    background: radial-gradient(circle, rgba(99,111,125,1) 2%, rgba(238,174,202,1) 85%, rgba(99,111,125,1) 100%);
+
+
+  }
+  30% {
+    background: radial-gradient(circle, rgba(99,111,125,1) 3%, rgba(238,174,202,1) 84%, rgba(99,111,125,1) 100%);
+  }
+  40% {
+    background: radial-gradient(circle, rgba(99,111,125,1) 4%, rgba(238,174,202,1) 83%, rgba(99,111,125,1) 100%);
+  }
+  50% {
+    background: radial-gradient(circle, rgba(99,111,125,1) 5%, rgba(238,174,202,1) 82%, rgba(99,111,125,1) 100%);
+  }
+  60% {
+    background: radial-gradient(circle, rgba(99,111,125,1) 50%, rgba(238,174,202,1) 81%, rgba(99,111,125,1) 100%);
+  }
+  70% {
+    background: radial-gradient(circle, rgba(99,111,125,1) 0%, rgba(238,174,202,1) 82%, rgba(99,111,125,1) 100%);
+  }
+  80% {
+    background: radial-gradient(circle, rgba(99,111,125,1) 0%, rgba(238,174,202,1) 83%, rgba(99,111,125,1) 100%);
+  }
+  90% {
+    background: radial-gradient(circle, rgba(99,111,125,1) 0%, rgba(238,174,202,1) 84%, rgba(99,111,125,1) 100%);
+  }
+  100% {
+    background: radial-gradient(circle, rgba(99,111,125,1) 0%, rgba(238,174,202,1) 85%, rgba(99,111,125,1) 100%);
+  }
+}
+
 .nav {
   width: 100%;
-  background: #444;
   color: white;
   text-align: center;
   padding: 10px;
@@ -96,7 +133,8 @@ xbutton{
   height: 90px;
   background: #6BBF80;
   border-radius: 5px;
-  background-image: url("../img/bg_card.png");
+  border: 4px solid floralwhite;
+  background-image: url("../img/cbg.png");
   background-position: center; /* Center the image */
   background-repeat: no-repeat; /* Do not repeat the image */
   background-size: cover; /* Resize the background image to cover the entire container */
@@ -105,7 +143,7 @@ xbutton{
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  border: 1px solid rgba(0,0,0,0.5);
+
 }
 
 /* Group .deck and .discard */
@@ -117,7 +155,7 @@ xbutton{
   border-radius: 5px;
   text-align: center;
   font-weight: bold;
-  background-image: url("../img/bg_card.png");
+  background-image: url("../img/cbg.png");
   background-position: center; /* Center the image */
   background-repeat: no-repeat; /* Do not repeat the image */
   background-size: cover; /* Resize the background image to cover the entire container */
@@ -129,13 +167,7 @@ xbutton{
   box-shadow: inset 0 0 0 1000px rgba(255,255,255,.7);
   color: black;
 }
-/* Responsiveness */
-@media screen and (min-width: 1024px) {
-  .card, .deck, .discard {
-    width: 120px;
-    height: 180px;
-  }
-}
+
 /* --    Alles   -- */
 *{
   -webkit-user-select: none; /* Safari */
@@ -143,9 +175,9 @@ xbutton{
   user-select: none; /* Standard syntax */
 }
 .player-hand .card:hover{
-  transform: scale(104%);
+  transform: scale(114%);
   z-index: 6;
-  box-shadow: inset 0 0 0 1000px rgba(255,255,255,.7), 0 3px 12px 7px rgba(255,255,255,0.9);
+  box-shadow: inset 0 0 0 1000px rgba(255,255,255,.7), 0 0px 10px 3px rgba(0,0,0,0.9);
 }
 .deck-area .deck:hover{
   transform: scale(104%);
@@ -175,6 +207,15 @@ button:active{
   transform: rotate(180deg);
 }
 
+.card-top, .card-bottom{
+  text-align: justify;
+  font-size: x-large;
+}
+.card-top::after, .card-bottom::after {
+  content: "";
+  display: inline-block;
+  width: 95%;
+}
 
 .stapel{
   display: grid;
@@ -346,3 +387,18 @@ button:active{
   z-index: 10;
 }
 */
+
+/* Responsiveness */
+@media screen and (min-width: 1024px) {
+  .card, .deck, .discard {
+    width: 120px;
+    height: 180px;
+  }
+}
+@media screen and (max-width: 1023px) {
+  button{
+    width: 100%;
+  }
+}
+
+

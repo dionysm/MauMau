@@ -135,9 +135,7 @@ function renderCards(containerSelector, cards, showOnlyTop = false, hideDetails 
       cardElement.addEventListener("dragstart", () => {
         draggedElement = cardElement;
       });
-      if (isPlayerTurn) {
-        cardElement.setAttribute("onclick", "playerTurn(this);");
-      }
+        cardElement.setAttribute("onclick", "playerTurn(this);")
     }
 
     if (hideDetails) {
@@ -398,7 +396,8 @@ function modal(kind, resolveCallback, nonInteractive = false) {
 
       const topDiv = document.createElement("div");
       topDiv.classList.add("card-top");
-      topDiv.textContent = suit.symbol;
+      topDiv.textContent +=
+      topDiv.textContent += suit.symbol;
       topDiv.style.color = textColor;
 
       const centerDiv = document.createElement("div");
@@ -502,6 +501,10 @@ function initializeDropArea() {
     event.preventDefault();
     playerTurn(draggedElement);
   });
+}
+
+function gameOver(whichPlayer){
+
 }
 
 /**

@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 630 880" width="630" height="880">
+  <!-- Hintergrund -->
+  <rect width="630" height="880" fill="#333333" />
+
+  <!-- Zentrales Motiv -->
+  <g transform="translate(315,440)">
+    <!-- Minimalistischer Knoten -->
+    <circle cx="0" cy="0" r="20" fill="#FF007F" />
+
+    <!-- Radiierende Linien -->
+    <g stroke="#FF007F" stroke-width="3" stroke-linecap="round">
+      <!-- Vertikale und horizontale Linien -->
+      <line x1="0" y1="0" x2="0" y2="-150" />
+      <line x1="0" y1="0" x2="0" y2="150" />
+      <line x1="0" y1="0" x2="150" y2="0" />
+      <line x1="0" y1="0" x2="-150" y2="0" />
+      <!-- Diagonale Linien -->
+      <line x1="0" y1="0" x2="106" y2="-106" />
+      <line x1="0" y1="0" x2="106" y2="106" />
+      <line x1="0" y1="0" x2="-106" y2="106" />
+      <line x1="0" y1="0" x2="-106" y2="-106" />
+    </g>
+
+    <!-- Feine Hilfslinien -->
+    <g stroke="#FF007F" stroke-width="1" stroke-dasharray="4 2">
+      <line x1="-315" y1="0" x2="315" y2="0" />
+      <line x1="0" y1="-440" x2="0" y2="440" />
+    </g>
+  </g>
+
+  <!-- Zusätzliche abstrakte Details -->
+  <g opacity="0.5" stroke="#FF007F" stroke-width="2" fill="none" stroke-dasharray="5,5">
+    <!-- Konzentrierte Kreise rund um das Zentrum -->
+    <circle cx="315" cy="440" r="100" />
+    <circle cx="315" cy="440" r="200" />
+    <circle cx="315" cy="440" r="300" />
+  </g>
+</svg>
