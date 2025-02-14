@@ -328,17 +328,21 @@ button:active{
 .hidden {
   display: none !important;
 }
-/* FÄCHERE KARTEN AUF
+
+/*
 .player-hand .card:nth-child(1) {
   transform: rotate(-15deg) translateY(-20px) translateX(55px);
+  transform-origin: 0% 100%;
   z-index: 6;
 }
 .player-hand .card:nth-child(2) {
   transform: rotate(-7deg) translateY(-50px) translateX(30px);
+  transform-origin: 25% 100%;
   z-index: 7;
 }
 .player-hand .card:nth-child(3) {
   transform:  translateY(-60px) ;
+  transform-origin: 50% 100%;
   z-index: 8;
 }
 .player-hand .card:nth-child(4) {
@@ -348,8 +352,8 @@ button:active{
 .player-hand .card:nth-child(5){
   transform: rotate(15deg) translateY(-20px) translateX(-55px);
   z-index: 10;
-}
-*/
+}*/
+
 
 /* Responsiveness */
 @media screen and (min-width: 1024px) {
