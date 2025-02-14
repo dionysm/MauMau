@@ -13,44 +13,9 @@ body {
   font-optical-sizing: auto;
   font-weight: 700;
   font-style: normal;
-  background: radial-gradient(circle, rgba(99,111,125,1) 0%, rgba(238,174,202,1) 87%, rgba(99,111,125,1) 100%);
+  background: rgb(99,111,125);
+  background: radial-gradient(circle, rgba(99,111,125,1) 0%, rgba(99,111,125,1) 13%, rgba(0,0,0,1) 100%);
   animation: smoothAnim ease infinite;
-}
-
-@keyframes smoothAnim {
-  0% {
-    background: radial-gradient(circle, rgba(99,111,125,1) 1%, rgba(238,174,202,1) 86%, rgba(99,111,125,1) 100%);
-
-  }
-  10% {
-    background: radial-gradient(circle, rgba(99,111,125,1) 2%, rgba(238,174,202,1) 85%, rgba(99,111,125,1) 100%);
-
-
-  }
-  30% {
-    background: radial-gradient(circle, rgba(99,111,125,1) 3%, rgba(238,174,202,1) 84%, rgba(99,111,125,1) 100%);
-  }
-  40% {
-    background: radial-gradient(circle, rgba(99,111,125,1) 4%, rgba(238,174,202,1) 83%, rgba(99,111,125,1) 100%);
-  }
-  50% {
-    background: radial-gradient(circle, rgba(99,111,125,1) 5%, rgba(238,174,202,1) 82%, rgba(99,111,125,1) 100%);
-  }
-  60% {
-    background: radial-gradient(circle, rgba(99,111,125,1) 50%, rgba(238,174,202,1) 81%, rgba(99,111,125,1) 100%);
-  }
-  70% {
-    background: radial-gradient(circle, rgba(99,111,125,1) 0%, rgba(238,174,202,1) 82%, rgba(99,111,125,1) 100%);
-  }
-  80% {
-    background: radial-gradient(circle, rgba(99,111,125,1) 0%, rgba(238,174,202,1) 83%, rgba(99,111,125,1) 100%);
-  }
-  90% {
-    background: radial-gradient(circle, rgba(99,111,125,1) 0%, rgba(238,174,202,1) 84%, rgba(99,111,125,1) 100%);
-  }
-  100% {
-    background: radial-gradient(circle, rgba(99,111,125,1) 0%, rgba(238,174,202,1) 85%, rgba(99,111,125,1) 100%);
-  }
 }
 
 .nav {
@@ -69,10 +34,10 @@ body {
   font-weight: 900;
   font-size: xxx-large;
   text-align: center;
-  /*! background: pink; */
+  /*! background: #F294B6; */
   border-radius: 70rem;
   /*! padding: 20rem; */
-  color: pink;
+  color: #F294B6;
   margin-bottom: 5rem;
 }
 
@@ -88,7 +53,7 @@ button{
   width: 20rem;
   background: none;
   border: none;
-  color: pink;
+  color: #F294B6;
   font-family: "Fira Code", serif;
   text-transform: uppercase;
   transition-property: font-size, font-weight, width, height;
@@ -97,17 +62,6 @@ button{
   transition-timing-function: ease;
 }
 
-xbutton{
-  height: 12vh;
-  width: 16vh;
-  max-height: 39px;
-  max-width: 120px;
-  background-color: #6BBF80;
-  border: none;
-  border-radius: 2px;
-  transition: transform 0.08s ease-in-out; /* Dauer: 0,5s */
-  box-shadow:  0 25px 2px -5px rgba(255,255,255,0.5) inset;
-}
 .subNav{
   display: flex;
   flex-direction: column;
@@ -133,6 +87,7 @@ xbutton{
   gap: 100px;
 }
 .card {
+  text-shadow: 0 0 10px #111111;
   width: 60px;
   height: 90px;
   background: #6BBF80;
@@ -319,7 +274,7 @@ button:active{
 .gameover {
   display: block;
   text-align: center;
-  color: pink;
+  color: #F294B6;
   grid-column: 2;
   grid-row: 2;
   padding: 0;
@@ -364,13 +319,6 @@ button:active{
 .modal-center-color-wr .card.computerHover {
   box-shadow: inset 0 0 150px 20px #6BBF80 !important;
   transform: scale(1.1);
-}
-
-.modal-center xbutton {
-  width: 100%;
-  height: 26%;
-  max-height: none;
-  max-width: none;
 }
 
 .startScreen{

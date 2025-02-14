@@ -75,6 +75,7 @@ function getBestColor(hand) {
  * @returns {Array} Array mit Kartenobjekten.
  */
 function initializeDeck() {
+  renderTurn()
   const newDeck = [];
   for (const suit of cardSuits) {
     for (const value of cardValues) {
@@ -142,7 +143,7 @@ function renderCards(containerSelector, cards, showOnlyTop = false, hideDetails 
       // Zeigt nur Rückseite (z. B. Fragezeichen) an
       cardElement.innerHTML = `<div class="card-back-text"></div>`;
     } else {
-      const textColor = card.color === "rot" ? "pink" : "grey";
+      const textColor = card.color === "rot" ? "#F294B6" : "white";
 
       const topDiv = document.createElement("div");
       topDiv.classList.add("card-top");
@@ -235,7 +236,7 @@ function startGame() {
 async function playerTurn(card) {
   if (!isPlayerTurn) return; // Spielerzug nur, wenn Spieler am Zug ist
   isPlayerTurn = false;
-
+  renderTurn()
   const index = Array.from(card.parentNode.children).indexOf(card);
   const selectedCard = playerHand[index];
   const topDiscard = discardPile[0];
@@ -288,10 +289,14 @@ function handleSpecialCard(specialCard, targetHand, playedBy = "player") {
 
 function aussetzen(playedBy){
   if (playedBy==="cpu"){
+    isPlayerTurn = false
     console.log("SpielerIN muss aussetzen")
+    opponentTurn()
   }
   else {
+    isPlayerTurn = true
     console.log("CPU muss aussetzen")
+    playerTurn()
   }
 
 }
@@ -311,12 +316,23 @@ function drawCard(cardsToDraw, hand) {
   }
 }
 
+
+function renderTurn() {
+  turnHeader = document.getElementById('turn')
+  if (isPlayerTurn) {
+    turnHeader.innerHTML = "Your Turn"
+    turnHeader.style.color = "#94F29B";
+  } else {
+    turnHeader.innerHTML = "CPUs Turn"
+    turnHeader.style.color = "#F294B6";
+  }
+}
 /**
  * Führt den Zug des Gegners asynchron aus.
  */
 async function opponentTurn() {
   isPlayerTurn = false;
-
+  renderTurn();
   // Sammle alle spielbaren Karten
   const playableCards = cpuHand.reduce((cards, cpuCard, index) => {
     if (cpuCard.cardValue === discardPile[0].cardValue || cpuCard.symbol === discardPile[0].symbol) {
@@ -343,6 +359,7 @@ async function opponentTurn() {
   }
   roundCounterDiv.innerHTML = turn++;
   isPlayerTurn = true;
+  renderTurn()
 }
 
 
@@ -376,6 +393,7 @@ function chooseColor(nonInteractive = false) {
  * @param {string} kind - Typ des Modals ("chooseColor", etc.).
  * @param {Function} resolveCallback - Callback, der beim Abschluss aufgerufen wird.
  * @param {boolean} [nonInteractive=false] - Wenn true, ist das Modal nicht interaktiv (CPU wählt).
+ * @param {whichplayer} string - Gibt den Spieler an um den Gameover Screen richtig darzustellen
  */
 function modal(kind, resolveCallback, nonInteractive = false, whichplayer = "") {
   modalContainer.innerHTML = "";
@@ -395,7 +413,7 @@ function modal(kind, resolveCallback, nonInteractive = false, whichplayer = "") 
     cardSuits.forEach(suit => {
       const cardElement = document.createElement("div");
       cardElement.classList.add("card", "player-hand");
-      const textColor = suit.color === "rot" ? "pink" : "grey";
+      const textColor = suit.color === "rot" ? "#f294b6" : "white";
 
       const topDiv = document.createElement("div");
       topDiv.classList.add("card-top");
@@ -505,7 +523,6 @@ function modal(kind, resolveCallback, nonInteractive = false, whichplayer = "") 
 
 /**
  * Aktualisiert die Farbe (bzw. das Symbol) der obersten Karte im Ablagestapel.
- * @param {string} color - Das gewählte Symbol/Farbe.
  */
 function turnColor(chosenSymbol) {
   // Finde den passenden Suit anhand des Symbols
