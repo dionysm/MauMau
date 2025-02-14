@@ -246,11 +246,13 @@ async function playerTurn(card) {
     card.remove();
     discardPile.unshift(selectedCard);
     renderDiscardPile();
+    gameOver("player", playerHand)
 
     // Spezialaktionen (z. B. Farbwahl beim Bube)
     await handleSpecialCard(selectedCard, cpuHand, "player");
 
     // Nach Spielerzug: Gegner ist an der Reihe
+
     opponentTurn();
   } else {
     // Ungültiger Zug – Spieler darf erneut interagieren
@@ -332,7 +334,7 @@ async function opponentTurn() {
     discardPile.unshift(card);
     renderDiscardPile();
     renderCPUHand();
-
+    gameOver("cpu",cpuHand)
     // Jetzt Spezialaktionen abarbeiten – z.B. Farbwahl bei Bube
     await handleSpecialCard(card, playerHand, "cpu");
     // Nach der Spezialaktion wurde bereits turnColor auf discardPile[0] aufgerufen.
@@ -375,12 +377,13 @@ function chooseColor(nonInteractive = false) {
  * @param {Function} resolveCallback - Callback, der beim Abschluss aufgerufen wird.
  * @param {boolean} [nonInteractive=false] - Wenn true, ist das Modal nicht interaktiv (CPU wählt).
  */
-function modal(kind, resolveCallback, nonInteractive = false) {
+function modal(kind, resolveCallback, nonInteractive = false, whichplayer = "") {
   modalContainer.innerHTML = "";
 
   if (kind === "chooseColor") {
     const centerWrapper = document.createElement("div");
     centerWrapper.classList.add("modal-center");
+    centerWrapper.id = "innerModal";
     centerWrapper.innerHTML = "<h3 style='color: white;'>Wähle eine Farbe</h3>";
     modalContainer.appendChild(centerWrapper);
 
@@ -465,6 +468,39 @@ function modal(kind, resolveCallback, nonInteractive = false) {
     }
   }
   // Weitere Modaltypen lassen sich hier ergänzen.
+  if (kind === "GameOver"){
+      if( whichplayer === "cpu"){
+        console.log("Verloren 😭!")
+        modalContainer.classList.remove("hidden");
+        centerWrapper = document.getElementById('modal')
+        const gameOverWrapper = document.createElement("div");
+        gameOverWrapper.classList.add("modal-center-color-wr");
+        gameOverWrapper.classList.add("gameover");
+        gameOverWrapper.style.gridColumn = "2"
+        gameOverWrapper.style.gridRow = "2"
+        centerWrapper.appendChild(gameOverWrapper);
+        gameOverWrapper.innerHTML = "<h1>\"Verloren 😭!\"</h1>"
+      }
+      else {
+        console.log("Gewonnen! Ü")
+        modalContainer.classList.remove("hidden");
+        centerWrapper = document.getElementById('modal')
+        const gameOverWrapper = document.createElement("div");
+        gameOverWrapper.classList.add("modal-center-color-wr");
+        gameOverWrapper.classList.add("gameover");
+        gameOverWrapper.style.gridColumn = "2"
+        gameOverWrapper.style.gridRow = "2"
+        centerWrapper.appendChild(gameOverWrapper);
+        gameOverWrapper.innerHTML = "<h1>\"Gewonnen 😍!\"</h1>"
+      }
+
+
+
+
+
+
+    modalContainer.toggleAttribute()
+  }
 }
 
 /**
@@ -503,15 +539,24 @@ function initializeDropArea() {
   });
 }
 
-function gameOver(whichPlayer){
+function gameOver(whichPlayer, playersHand) {
+  if (playersHand.length <= 0){
+    if (whichPlayer === "cpu") {
+      modal("GameOver",null,null,"cpu")
+    }
+    else{
+      modal("GameOver",null,null,"player")
+    }
+  }
 
 }
 
 /**
  * Platzhalter für zukünftige Erweiterungen (z. B. Tastaturnavigation).
  */
-function keyboardNavigation() {
-  // TODO: Implementiere Navigation via Pfeiltasten/Leertaste.
+function keyboardNavigation(){
+  console.log("nothing")
+  //LEER
 }
 
 // ==========================================================================
